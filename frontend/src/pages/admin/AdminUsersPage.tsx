@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 
 interface AdminUser {
   id: string;
-  email: string;
+  username: string;
   role: "ADMIN" | "USER";
   isActive: boolean;
   totpEnabled: boolean;
@@ -19,7 +19,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"ADMIN" | "USER">("USER");
   const [error, setError] = useState<string | null>(null);
@@ -44,8 +44,8 @@ export default function AdminUsersPage() {
     setError(null);
     setSubmitting(true);
     try {
-      await api.post("/admin/users", { email, password, role });
-      setEmail("");
+      await api.post("/admin/users", { username, password, role });
+      setUsername("");
       setPassword("");
       setRole("USER");
       setShowForm(false);
@@ -90,8 +90,8 @@ export default function AdminUsersPage() {
         <div className="card" style={{ marginBottom: "1.5rem" }}>
           <form onSubmit={handleCreate}>
             <div className="field">
-              <label>{t("admin.email")}</label>
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <label>{t("admin.username")}</label>
+              <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} />
             </div>
             <div className="field">
               <label>{t("auth.passwordLabel")}</label>
@@ -125,7 +125,7 @@ export default function AdminUsersPage() {
           <table>
             <thead>
               <tr>
-                <th>{t("admin.email")}</th>
+                <th>{t("admin.username")}</th>
                 <th>{t("admin.role")}</th>
                 <th>{t("admin.status")}</th>
                 <th>{t("admin.twoFactor")}</th>
@@ -136,7 +136,7 @@ export default function AdminUsersPage() {
             <tbody>
               {users.map((u) => (
                 <tr key={u.id}>
-                  <td>{u.email}</td>
+                  <td>{u.username}</td>
                   <td>{u.role === "ADMIN" ? t("admin.roleAdmin") : t("admin.roleUser")}</td>
                   <td>
                     <span className={`badge ${u.isActive ? "badge-success" : "badge-muted"}`}>

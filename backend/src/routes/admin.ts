@@ -15,7 +15,7 @@ adminRouter.use(requireAuth, requireAdmin, requireTwoFactorForAdmin);
 
 function serializeUser(user: {
   id: string;
-  email: string;
+  username: string;
   role: string;
   isActive: boolean;
   totpEnabled: boolean;
@@ -24,7 +24,7 @@ function serializeUser(user: {
 }) {
   return {
     id: user.id,
-    email: user.email,
+    username: user.username,
     role: user.role,
     isActive: user.isActive,
     totpEnabled: user.totpEnabled,
@@ -44,7 +44,7 @@ adminRouter.post("/users", asyncHandler(async (req, res) => {
     res.status(400).json({ error: "invalid_input" });
     return;
   }
-  const { email, password, role } = parsed.data;
+  const { username, password, role } = parsed.data;
 
   const passwordError = validatePasswordStrength(password);
   if (passwordError) {
@@ -52,15 +52,15 @@ adminRouter.post("/users", asyncHandler(async (req, res) => {
     return;
   }
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await prisma.user.findUnique({ where: { username } });
   if (existing) {
-    res.status(409).json({ error: "email_taken" });
+    res.status(409).json({ error: "username_taken" });
     return;
   }
 
   const passwordHash = await hashSecret(password);
   const user = await prisma.user.create({
-    data: { email, passwordHash, role },
+    data: { username, passwordHash, role },
   });
 
   await logAudit(req.user!.id, "admin.user_created", user.id, `role=${role}`);
@@ -81,7 +81,7 @@ adminRouter.delete("/users/:id", asyncHandler(async (req, res) => {
   }
 
   await prisma.user.delete({ where: { id } });
-  await logAudit(req.user!.id, "admin.user_deleted", id, target.email);
+  await logAudit(req.user!.id, "admin.user_deleted", id, target.username);
   res.json({ ok: true });
 }));
 

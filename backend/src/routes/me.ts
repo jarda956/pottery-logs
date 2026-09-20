@@ -8,7 +8,7 @@ export const meRouter = Router();
 
 function serializeUser(user: {
   id: string;
-  email: string;
+  username: string;
   role: string;
   language: string;
   totpEnabled: boolean;
@@ -16,7 +16,7 @@ function serializeUser(user: {
 }) {
   return {
     id: user.id,
-    email: user.email,
+    username: user.username,
     role: user.role,
     language: user.language,
     totpEnabled: user.totpEnabled,

@@ -9,7 +9,7 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -20,7 +20,7 @@ export default function RegisterPage() {
     setError(null);
     setSubmitting(true);
     try {
-      await register(email, password);
+      await register(username, password);
       setSuccess(true);
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
@@ -38,15 +38,18 @@ export default function RegisterPage() {
         <p className="muted">{t("auth.registerSubtitle")}</p>
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label htmlFor="email">{t("auth.emailLabel")}</label>
+            <label htmlFor="username">{t("auth.usernameLabel")}</label>
             <input
-              id="email"
-              type="email"
-              autoComplete="email"
+              id="username"
+              type="text"
+              autoComplete="username"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
+            <span className="muted" style={{ fontSize: "0.85rem" }}>
+              {t("auth.usernameHint")}
+            </span>
           </div>
           <div className="field">
             <label htmlFor="password">{t("auth.passwordLabel")}</label>

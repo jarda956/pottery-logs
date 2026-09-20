@@ -4,7 +4,7 @@ import { api, ApiError } from "../api/client";
 
 export interface CurrentUser {
   id: string;
-  email: string;
+  username: string;
   role: "ADMIN" | "USER";
   language: "cs" | "en";
   totpEnabled: boolean;
@@ -15,9 +15,9 @@ export interface CurrentUser {
 interface AuthContextValue {
   user: CurrentUser | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ requiresTwoFactor: boolean }>;
+  login: (username: string, password: string) => Promise<{ requiresTwoFactor: boolean }>;
   verifyTwoFactor: (token: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   setLanguage: (language: "cs" | "en") => Promise<void>;
@@ -57,9 +57,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })();
   }, [refresh]);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (username: string, password: string) => {
     const result = await api.post<{ requiresTwoFactor: boolean }>("/auth/login", {
-      email,
+      username,
       password,
     });
     if (!result.requiresTwoFactor) {
@@ -73,8 +73,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await refresh();
   }, [refresh]);
 
-  const register = useCallback(async (email: string, password: string) => {
-    await api.post("/auth/register", { email, password, language: i18n.language === "en" ? "en" : "cs" });
+  const register = useCallback(async (username: string, password: string) => {
+    await api.post("/auth/register", { username, password, language: i18n.language === "en" ? "en" : "cs" });
   }, []);
 
   const logout = useCallback(async () => {

@@ -25,7 +25,7 @@ export default function Layout() {
         </nav>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           <LanguageSwitcher />
-          <span className="muted">{user?.email}</span>
+          <span className="muted">{user?.username}</span>
           <button className="btn btn-secondary" onClick={handleLogout}>
             {t("common.logout")}
           </button>

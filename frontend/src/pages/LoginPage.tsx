@@ -9,7 +9,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -19,7 +19,7 @@ export default function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const result = await login(email, password);
+      const result = await login(username, password);
       if (result.requiresTwoFactor) {
         navigate("/2fa-verify");
       } else {
@@ -40,14 +40,14 @@ export default function LoginPage() {
         <p className="muted">{t("auth.loginSubtitle")}</p>
         <form onSubmit={handleSubmit}>
           <div className="field">
-            <label htmlFor="email">{t("auth.emailLabel")}</label>
+            <label htmlFor="username">{t("auth.usernameLabel")}</label>
             <input
-              id="email"
-              type="email"
-              autoComplete="email"
+              id="username"
+              type="text"
+              autoComplete="username"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className="field">

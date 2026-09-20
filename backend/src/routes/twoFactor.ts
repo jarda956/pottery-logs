@@ -80,7 +80,7 @@ twoFactorRouter.post("/setup", requireAuth, asyncHandler(async (req, res) => {
     data: { totpSecret: secret, totpEnabled: false },
   });
 
-  const qrCodeDataUrl = await buildTotpQrCodeDataUrl(user.email, secret);
+  const qrCodeDataUrl = await buildTotpQrCodeDataUrl(user.username, secret);
   res.json({ secret, qrCodeDataUrl });
 }));
 

@@ -1,16 +1,22 @@
 import { z } from "zod";
 
-export const emailSchema = z.string().trim().toLowerCase().email().max(255);
+export const usernameSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .min(3)
+  .max(32)
+  .regex(/^[a-z0-9._-]+$/, "invalid_username");
 export const passwordSchema = z.string().min(10).max(255);
 
 export const registerSchema = z.object({
-  email: emailSchema,
+  username: usernameSchema,
   password: passwordSchema,
   language: z.enum(["cs", "en"]).optional(),
 });
 
 export const loginSchema = z.object({
-  email: emailSchema,
+  username: usernameSchema,
   password: z.string().min(1).max(255),
 });
 
@@ -27,7 +33,7 @@ export const updateLanguageSchema = z.object({
 });
 
 export const adminCreateUserSchema = z.object({
-  email: emailSchema,
+  username: usernameSchema,
   password: passwordSchema,
   role: z.enum(["ADMIN", "USER"]).default("USER"),
 });

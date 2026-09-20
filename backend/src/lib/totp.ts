@@ -17,7 +17,7 @@ export function verifyTotpToken(secret: string, token: string): boolean {
   }
 }
 
-export async function buildTotpQrCodeDataUrl(email: string, secret: string): Promise<string> {
-  const otpauthUrl = authenticator.keyuri(email, ISSUER, secret);
+export async function buildTotpQrCodeDataUrl(accountName: string, secret: string): Promise<string> {
+  const otpauthUrl = authenticator.keyuri(accountName, ISSUER, secret);
   return QRCode.toDataURL(otpauthUrl);
 }

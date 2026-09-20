@@ -11,7 +11,7 @@ datasource db {
 // ("ADMIN" | "USER") — see src/validation and the Role type in src/lib/roles.ts.
 model User {
   id                 String   @id @default(uuid())
-  email              String   @unique
+  username           String   @unique
   passwordHash       String
   role               String   @default("USER")
   isActive           Boolean  @default(true)

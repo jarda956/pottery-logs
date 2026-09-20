@@ -71,7 +71,7 @@ Set at minimum:
   `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`
 - `COOKIE_SECURE=true` (requires HTTPS — see the reverse proxy step below)
 - `TRUST_PROXY=1` (the app sits behind nginx/Caddy)
-- `INITIAL_ADMIN_EMAIL` / `INITIAL_ADMIN_PASSWORD` — used once by the admin
+- `INITIAL_ADMIN_USERNAME` / `INITIAL_ADMIN_PASSWORD` — used once by the admin
   bootstrap script below, then no longer read
 
 ## 5. Build and initialize the database

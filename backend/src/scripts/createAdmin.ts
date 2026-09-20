@@ -1,7 +1,7 @@
 /**
- * Bootstraps the very first administrator account from INITIAL_ADMIN_EMAIL /
+ * Bootstraps the very first administrator account from INITIAL_ADMIN_USERNAME /
  * INITIAL_ADMIN_PASSWORD in .env. Safe to re-run: it does nothing if an
- * admin with that email already exists.
+ * admin with that username already exists.
  *
  * Usage: npm run seed:admin
  */
@@ -13,11 +13,11 @@ import { ensureSqliteDirExists } from "../lib/ensureDataDir";
 async function main() {
   ensureSqliteDirExists(process.env.DATABASE_URL);
 
-  const email = process.env.INITIAL_ADMIN_EMAIL?.trim().toLowerCase();
+  const username = process.env.INITIAL_ADMIN_USERNAME?.trim().toLowerCase();
   const password = process.env.INITIAL_ADMIN_PASSWORD;
 
-  if (!email || !password) {
-    console.error("Set INITIAL_ADMIN_EMAIL and INITIAL_ADMIN_PASSWORD in .env first.");
+  if (!username || !password) {
+    console.error("Set INITIAL_ADMIN_USERNAME and INITIAL_ADMIN_PASSWORD in .env first.");
     process.exit(1);
   }
 
@@ -27,18 +27,18 @@ async function main() {
     process.exit(1);
   }
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await prisma.user.findUnique({ where: { username } });
   if (existing) {
-    console.log(`User ${email} already exists (role=${existing.role}); leaving it as is.`);
+    console.log(`User ${username} already exists (role=${existing.role}); leaving it as is.`);
     return;
   }
 
   const passwordHash = await hashSecret(password);
   const admin = await prisma.user.create({
-    data: { email, passwordHash, role: "ADMIN" },
+    data: { username, passwordHash, role: "ADMIN" },
   });
 
-  console.log(`Created admin account ${admin.email}.`);
+  console.log(`Created admin account ${admin.username}.`);
   console.log("Sign in and set up two-factor authentication immediately — it is required for admins.");
 }
 

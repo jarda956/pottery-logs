@@ -23,7 +23,7 @@ authRouter.post("/register", registerRateLimiter, asyncHandler(async (req, res) 
     res.status(400).json({ error: "invalid_input" });
     return;
   }
-  const { email, password, language } = parsed.data;
+  const { username, password, language } = parsed.data;
 
   const passwordError = validatePasswordStrength(password);
   if (passwordError) {
@@ -31,7 +31,7 @@ authRouter.post("/register", registerRateLimiter, asyncHandler(async (req, res) 
     return;
   }
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await prisma.user.findUnique({ where: { username } });
   if (existing) {
     // Do not leak whether the account exists.
     res.status(201).json({ ok: true });
@@ -41,7 +41,7 @@ authRouter.post("/register", registerRateLimiter, asyncHandler(async (req, res) 
   const passwordHash = await hashSecret(password);
   const user = await prisma.user.create({
     data: {
-      email,
+      username,
       passwordHash,
       role: "USER",
       language: language ?? "cs",
@@ -59,9 +59,9 @@ authRouter.post("/login", loginRateLimiter, asyncHandler(async (req, res) => {
     res.status(400).json({ error: "invalid_input" });
     return;
   }
-  const { email, password } = parsed.data;
+  const { username, password } = parsed.data;
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ where: { username } });
 
   // Constant-shape response whether or not the account exists, to avoid
   // user enumeration.
