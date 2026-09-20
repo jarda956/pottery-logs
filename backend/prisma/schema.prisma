@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite has no native enum type, so roles are a plain validated string
+// ("ADMIN" | "USER") — see src/validation and the Role type in src/lib/roles.ts.
+model User {
+  id                 String   @id @default(uuid())
+  email              String   @unique
+  passwordHash       String
+  role               String   @default("USER")
+  isActive           Boolean  @default(true)
+  language           String   @default("cs")
+
+  totpSecret         String?
+  totpEnabled        Boolean  @default(false)
+  totpBackupCodes    String? // JSON array of argon2-hashed one-time backup codes
+
+  failedLoginCount   Int      @default(0)
+  lockedUntil        DateTime?
+  lastLoginAt        DateTime?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  sessions           Session[]
+  firingCurves       FiringCurve[]
+  glazeCombinations  GlazeCombination[]
+  auditLogs          AuditLog[] @relation("ActorAuditLogs")
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model FiringCurve {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String
+  controller  String // regulator name/model, e.g. "RC 210"
+  description String?
+  maxTempC    Int?
+  // JSON array of segments, e.g.
+  // [{ "targetTempC": 100, "rateCPerHour": 60, "holdMinutes": 20 }, ...]
+  segments    String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model GlazeCombination {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String
+  clayBody    String?
+  firingTempC Int?
+  firingCone  String?
+  // JSON array of glaze layers, e.g.
+  // [{ "name": "...", "manufacturer": "...", "layers": 2, "notes": "..." }, ...]
+  glazes      String
+  result      String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actorId   String?
+  actor     User?    @relation("ActorAuditLogs", fields: [actorId], references: [id], onDelete: SetNull)
+  action    String
+  targetId  String?
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([actorId])
+}
